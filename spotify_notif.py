@@ -14,11 +14,7 @@ def getPodcasts():
                             (client_id=cred.CLIENT_ID, client_secret= cred.CLIENT_SECRET,
                             redirect_uri=cred.REDIRECT_URI, scope=scope))
 
-    episode_ids=['732eFL1RZRahaeu3HgCkJB','6mTel3azvnK8isLs4VujvF', '07SjDmKb9iliEzpNcN2xGD', '4zmVd1CGeUCxAAMwGAwsFD',
-                    '1FGGKjWUwKesloB1pL7srx', '10TI0u482gcHsEubx6Eott', '6ups0LMt1G8n81XLlkbsPo', '64hSJ12039GyxN2FZrueUd',
-                    '6z4NLXyHPga1UmSJsPK7G1', '7sA60f94UXwZDH1EJC4obI', '6EEUw7cOQ6ZqGJpe7QLRbw', '2IHYyH87D5gDc4UH61YcrU',
-                    '2AJE3OvWGD0N2KwHQJwlDA', '4KnB6LzFr1PHPs8NWdr96Q', '5tObaoAimbLiA7vtj3f7RS', '1lUPomulZRPquVAOOd56EW',
-                    '4oUZ3Yut3T1hbpfNjRjrsO', '3IcA76e8ZV0NNSJ81XHQUg', '6L47MDMO3xuN2XBed7miEI', '2sYCMjQed0gHYtXzPvcj5K']
+    episode_ids = current_user_saved_shows()
 
     print('\n')
     unsorted_episodes = list()
@@ -46,25 +42,3 @@ def getPodcasts():
                 podcasts.append('\n', date.strftime("%B %d, %Y"))
             podcasts.append('[' + episodes[i]['show'] + ']',episodes[i]['name'], '//', episodes[i]['total'])
     return podcasts
-"""
-    the a24 podcast: 732eFL1RZRahaeu3HgCkJB
-    the big picture: 6mTel3azvnK8isLs4VujvF
-    the bill simmons podcast: 07SjDmKb9iliEzpNcN2xGD
-    blank check with griffin & david: 4zmVd1CGeUCxAAMwGAwsFD
-    cerebro: 1FGGKjWUwKesloB1pL7srx
-    the director's cut - a dga podcast: 10TI0u482gcHsEubx6Eott
-    the filmcast (AKA the slashfilmcast): 6ups0LMt1G8n81XLlkbsPo
-    filmspotting - movie reviews: 64hSJ12039GyxN2FZrueUd
-    freakonomics radio: 6z4NLXyHPga1UmSJsPK7G1
-    the letterboxd show: 7sA60f94UXwZDH1EJC4obI
-    the neoliberal podcast: 6EEUw7cOQ6ZqGJpe7QLRbw
-    the new yorker: fiction: 2IHYyH87D5gDc4UH61YcrU
-    the new yorker: the writer's voice: 2AJE3OvWGD0N2KwHQJwlDA
-    the penguin podcast: 4KnB6LzFr1PHPs8NWdr96Q
-    the prestige tv podcast: 5tObaoAimbLiA7vtj3f7RS
-    the rewatchables: 1lUPomulZRPquVAOOd56EW
-    ty burr's watch cast: 4oUZ3Yut3T1hbpfNjRjrsO
-    the watch: 3IcA76e8ZV0NNSJ81XHQUg
-    wtf with marc maron podcast: 6L47MDMO3xuN2XBed7miEI
-    you must remember this: 2sYCMjQed0gHYtXzPvcj5K
-"""
