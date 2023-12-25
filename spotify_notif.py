@@ -14,18 +14,23 @@ def getPodcasts():
                             (client_id=cred.CLIENT_ID, client_secret= cred.CLIENT_SECRET,
                             redirect_uri=cred.REDIRECT_URI, scope=scope))
 
-    episode_ids = sp.current_user_saved_shows()
-
+    show_list = sp.current_user_saved_shows(limit=20, market='US')
+    show_ids = list()
+    for i in range(0, show_list['total'] - 1):
+        show_ids.append(show_list['items'][i]['show']['id'])
+ 
+         
     print('\n')
-    unsorted_episodes = list()
-    for id in episode_ids:
-        results = sp.show_episodes(show_id=id, limit=5)
+    unsorted_episodes = list(dict())
+    for id in show_ids:
+        results = sp.show_episodes(show_id=id, limit=10, market='US')
         for idx, item in enumerate(results['items']):
             duration = getMS(item['duration_ms'])
-            unsorted_episodes.append({'show': sp.show(id)['name'],
-                                      'name': item['name'],
-                                      'release_date': datetime.strptime(item['release_date'], '%Y-%m-%d').date(),
-                                      'total': duration})
+            ep = {'show': sp.show(id)['name'],
+                'name': item['name'],
+                'release_date': datetime.strptime(item['release_date'], '%Y-%m-%d').date(),
+                'total': duration}
+            unsorted_episodes.append(ep)
 
     episodes = sorted(unsorted_episodes, key= lambda x: x['release_date'])
     episodes.reverse()
@@ -34,11 +39,11 @@ def getPodcasts():
     podcasts = list()
     date = episodes[0]['release_date']
     podcasts.append(date.strftime("%B %d, %Y"))
-    podcasts.append('[' + episodes[0]['show'] + ']',episodes[0]['name'], '//', episodes[0]['total'])
+    podcasts.append(" ".join(('[',  episodes[0]['show'] , ']',  episodes[0]['name'],  '//',  episodes[0]['total'])))
     for i in range(1, episodes.__len__()):
-        if (today - timedelta(days=10) <= date <= today):
+        if (today - timedelta(days=30) <= date <= today):
             if episodes[i]['release_date'] != date:
                 date = episodes[i]['release_date']
-                podcasts.append('\n', date.strftime("%B %d, %Y"))
-            podcasts.append('[' + episodes[i]['show'] + ']',episodes[i]['name'], '//', episodes[i]['total'])
+                podcasts.append(" ".join(('\n', date.strftime("%B %d, %Y"))))
+            podcasts.append(" ".join(('[',  episodes[i]['show'] , ']',  episodes[i]['name'],  '//',  episodes[i]['total'])))
     return podcasts

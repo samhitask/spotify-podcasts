@@ -10,7 +10,10 @@
 
     
     <h1> Podcast Updates </h1>
-    <p> coded by Samhita </p>
+    <p> <p>
+      {% for item in podcasts %}
+          {{ item }} <br>
+      {% endfor %}
     {% endblock %}
   </body>
 </html>
