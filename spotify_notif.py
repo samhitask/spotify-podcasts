@@ -14,7 +14,7 @@ def getPodcasts():
                             (client_id=cred.CLIENT_ID, client_secret= cred.CLIENT_SECRET,
                             redirect_uri=cred.REDIRECT_URI, scope=scope))
 
-    episode_ids = current_user_saved_shows()
+    episode_ids = sp.current_user_saved_shows()
 
     print('\n')
     unsorted_episodes = list()
