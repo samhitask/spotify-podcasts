@@ -1,0 +1,31 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f8f9fa; 
+}
+
+.navbar {
+  margin-bottom: 20px; 
+}
+
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* drop shadow */
+}
+
+.card:hover {
+  transform: scale(1.05); /* enlarge the card on hover */
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.card-subtitle {
+  font-size: 1rem;
+  color: #6c7d6e; /* default text color */
+}
+
+.card-text {
+  font-size: 0.875rem;
+  color: #384034; /* Dark text color */
+}

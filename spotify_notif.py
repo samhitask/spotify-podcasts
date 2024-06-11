@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from markupsafe import Markup
+from bs4 import BeautifulSoup
 import spotipy
 import cred
 
@@ -19,31 +21,30 @@ def getPodcasts():
     for i in range(0, show_list['total'] - 1):
         show_ids.append(show_list['items'][i]['show']['id'])
  
-         
-    print('\n')
     unsorted_episodes = list(dict())
     for id in show_ids:
         results = sp.show_episodes(show_id=id, limit=10, market='US')
         for idx, item in enumerate(results['items']):
             duration = getMS(item['duration_ms'])
+            release =  datetime.strptime(item['release_date'], '%Y-%m-%d').date()
+            description = item['html_description'];
             ep = {'show': sp.show(id)['name'],
                 'name': item['name'],
-                'release_date': datetime.strptime(item['release_date'], '%Y-%m-%d').date(),
+                'description': Markup(extract_first_paragraph(description)),
+                'play-url': item['external_urls']['spotify'],
+                'raw_date': release,
+                'release_date': release.strftime('%B %d, %Y'),
                 'total': duration}
             unsorted_episodes.append(ep)
 
-    episodes = sorted(unsorted_episodes, key= lambda x: x['release_date'])
+    episodes = sorted(unsorted_episodes, key= lambda x: x['raw_date'])
     episodes.reverse()
-    today = datetime.today().date()
+    
+    return episodes
 
-    podcasts = list()
-    date = episodes[0]['release_date']
-    podcasts.append(date.strftime("%B %d, %Y"))
-    podcasts.append(" ".join(('[',  episodes[0]['show'] , ']',  episodes[0]['name'],  '//',  episodes[0]['total'])))
-    for i in range(1, episodes.__len__()):
-        if (today - timedelta(days=30) <= date <= today):
-            if episodes[i]['release_date'] != date:
-                date = episodes[i]['release_date']
-                podcasts.append(" ".join(('\n', date.strftime("%B %d, %Y"))))
-            podcasts.append(" ".join(('[',  episodes[i]['show'] , ']',  episodes[i]['name'],  '//',  episodes[i]['total'])))
-    return podcasts
+def extract_first_paragraph(html_content):
+    soup = BeautifulSoup(html_content, 'html.parser')
+    first_paragraph = soup.find('p')
+    if first_paragraph:
+        return str(first_paragraph)
+    return ''

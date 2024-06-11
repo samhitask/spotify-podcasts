@@ -10,7 +10,7 @@ class podcastEpisode:
 
     @property
     def _show(self):
-        return self.series
+        return self._show
     
     @property
     def title(self):
@@ -27,8 +27,3 @@ class podcastEpisode:
     @property
     def total(self):
         return self.total
-
-pd = podcastEpisode("show", "title", "2023-06-17", "time1", "time2")
-
-print(pd.total())
-print(pd.date())
