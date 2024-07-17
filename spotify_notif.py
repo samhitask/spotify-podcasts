@@ -18,7 +18,7 @@ def getPodcasts():
 
     show_list = sp.current_user_saved_shows(limit=20, market='US')
     show_ids = list()
-    for i in range(0, show_list['total'] - 1):
+    for i in range(0, show_list['total']):
         show_ids.append(show_list['items'][i]['show']['id'])
  
     unsorted_episodes = list(dict())
