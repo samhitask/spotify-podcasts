@@ -1,58 +1,37 @@
-// pages/index.tsx or equivalent
-'use client';
 
-import React, { useEffect, useState } from 'react';
-import { getPodcasts } from './services/podcastService';
+import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { spectral } from '../ui/fonts';
 
-interface Podcast {
-    show: string;
-    name: string;
-    description: string;
-    play_url: string;
-    release_date: string;
-    total: string;
-}
 
-const HomePage: React.FC = () => {
-    const [podcasts, setPodcasts] = useState<Podcast[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await getPodcasts();
-                setPodcasts(data);
-                setLoading(false);
-            } catch (err) {
-                setError('Error loading podcasts');
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
-
-    if (loading) return <p className="my-5 text-center">Loading...</p>;
-    if (error) return <p className="my-5 text-center">{error}</p>;
-
-    return (
-        <div className="font-sans">
-            <h1 className="text-3xl mb-4">Podcasts</h1>
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {podcasts.map((podcast, index) => (
-                    <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
-                        <div className="p-4">
-                            <h2 className="text-lg font-bold mb-2">{podcast.show}</h2>
-                            <p className="text-sm text-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: podcast.description }}></p>
-                            <p className="text-xs text-gray-500">Released on: {podcast.release_date}</p>
-                            <p className="text-xs text-gray-500">Duration: {podcast.total}</p>
-                            <a href={podcast.play_url} className="inline-block mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Listen</a>
-                        </div>
-                    </div>
-                ))}
-            </div>
+export default function Page() {
+  return (
+    <main className="flex min-h-screen flex-col p-6">
+      <div className="flex h-20 shrink-0 items-end rounded-lg bg-green-500 p-4 md:h-52">
+      </div>
+      <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
+        <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:w-2/5 md:px-20">
+          <p
+            className={`${spectral.className} text-xl text-gray-800 md:text-3xl md:leading-normal`}
+          >
+            <strong>Welcome to Podcastify.</strong> Made by{'  '}
+            <a href="https://github.com/samhitask/" className="text-green-500">
+                Samhita Kumar 
+            </a>
+             , using the Spotify Web API.
+          </p>
+          <Link
+            href="/login"
+            className="flex items-center gap-5 self-start rounded-lg bg-green-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-green-400 md:text-base"
+          >
+            <span>Get started</span> <ArrowRightIcon className="w-5 md:w-6" />
+          </Link>
         </div>
-    );
-};
-
-export default HomePage;
+        <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
+          {/* Add Hero Images Here */}
+          
+        </div>
+      </div>
+    </main>
+  );
+}
