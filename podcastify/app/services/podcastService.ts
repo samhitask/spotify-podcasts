@@ -1,32 +1,30 @@
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:5000';  // Update to your Flask backend URL
+const API_URL = 'http://127.0.0.1:5000';
 
 const api = axios.create({
   baseURL: API_URL,
-  withCredentials: true, // This is important for sending cookies with requests
+  withCredentials: true,
 });
 
-// Interceptor to handle token refreshing
 api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        // Attempt to refresh the token
-        await axios.get(`${API_URL}/token`, { withCredentials: true });
-        // If successful, retry the original request
-        return api(originalRequest);
-      } catch (refreshError) {
-        // If refresh fails, redirect to login
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+      if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+          // Attempt to refresh the token
+          await axios.get(`${API_URL}/token`, { withCredentials: true });
+          // Retry the original request with the new token
+          return api(originalRequest);
+        } catch (refreshError) {
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
+        }
       }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
 );
 
 export const login = () => {
