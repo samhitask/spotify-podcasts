@@ -12,7 +12,7 @@ interface Podcast {
     total: string;
 }
 
-const HomePage: React.FC = () => {
+const EpisodesPage: React.FC = () => {
     const [podcasts, setPodcasts] = useState<Podcast[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -97,4 +97,4 @@ const HomePage: React.FC = () => {
     );
 };
 
-export default HomePage;
+export default EpisodesPage;

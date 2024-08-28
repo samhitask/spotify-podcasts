@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/application.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "podcastify/next.config.js",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "backend/application.py" },
+    { "src": "/(.*)", "dest": "podcastify/app/$1" }
+  ]
+}
