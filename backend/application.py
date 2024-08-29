@@ -109,13 +109,9 @@ def home():
         if token_info is None:
             raise Exception("No valid token found.")
         sp = spotipy.Spotify(auth=token_info['access_token'])
-        
-        logging.info("Fetching shows...")
-        show_list = spotify_notif.getShows(sp)
-        logging.info(f"Found {len(show_list)} shows")
-        
+
         logging.info("Fetching podcasts...")
-        podcasts = spotify_notif.getPodcasts(show_list, sp)
+        podcasts = spotify_notif.getPodcasts(sp)
         logging.info(f"Found {len(podcasts)} podcasts")
         
         return jsonify(podcasts)
@@ -131,7 +127,7 @@ def getShows():
         if token_info is None:
             raise Exception("No valid token found.")
         spotify_notif.sp = spotipy.Spotify(auth=token_info['access_token'])
-        return jsonify(spotify_notif.getShows())
+        return jsonify(spotify_notif.getShows(spotify_notif.sp))
     except Exception as e:
         logging.error(f"Error in getShows route: {e}")
         return jsonify({"error": str(e)}), 401
@@ -150,6 +146,18 @@ def logout():
     cache.clear()  # Clear the cache on logout
     logging.debug("Session and cache cleared on logout.")
     return jsonify({"success": True, "message": "Logged out successfully"}), 200
+
+@app.route('/clear-cache', methods=['POST'])
+def clear_content_cache():
+    try:
+        cache.delete('view//shows')  # Clear cache for the getShows route
+        cache.delete('view//')  # Clear cache for the home route (podcasts)
+        
+        logging.info("Content caches (podcasts and shows) cleared successfully.")
+        return jsonify({"success": True, "message": "Content caches cleared successfully"}), 200
+    except Exception as e:
+        logging.error(f"Error clearing content caches: {str(e)}")
+        return jsonify({"error": "Failed to clear caches", "details": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

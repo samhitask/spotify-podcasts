@@ -10,12 +10,14 @@ interface Podcast {
     play_url: string;
     release_date: string;
     total: string;
+    show_image: string | null;
 }
 
 const EpisodesPage: React.FC = () => {
     const [podcasts, setPodcasts] = useState<Podcast[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [expandedDescriptions, setExpandedDescriptions] = useState<{[key: number]: boolean}>({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -44,8 +46,6 @@ const EpisodesPage: React.FC = () => {
                 }
                 console.log("Token Info:", tokenInfo);
 
-
-
                 // Fetch podcasts
                 const data = await getPodcasts();
                 console.log("Podcasts Data:", data);
@@ -65,28 +65,51 @@ const EpisodesPage: React.FC = () => {
         fetchData();
     }, []);
 
+    const toggleDescription = (index: number) => {
+        setExpandedDescriptions(prev => ({
+            ...prev,
+            [index]: !prev[index]
+        }));
+    };
+
     if (loading) return <p className="my-5 text-center">Loading...</p>;
     if (error) return <p className="my-5 text-center">{error}</p>;
 
-    console.log('Rendering podcasts:', podcasts); // Keep this for debugging
-
     return (
-        <div className="font-sans p-4">
-            <h1 className="text-3xl mb-4">Podcasts</h1>
+        <div className="font-sans p-4 bg-gray-100">
+            <h1 className="text-3xl mb-4">Latest episodes from your saved shows on Spotify.</h1>
+            <p> Check out our about page to learn how this is done. </p>
+            <br/>
             {podcasts.length === 0 ? (
-                <p>No podcasts available. Make sure you have saved shows to your library! </p>
+                <p>No episodes available. Make sure you have saved shows in your library!</p>
             ) : (
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {podcasts.map((podcast, index) => (
-                        <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg">
-                            <div className="p-4">
-                                <h2 className="text-lg font-bold mb-2">{podcast.show || 'Unknown Show'}</h2>
-                                <h3 className="text-lg mb-2">{podcast.name || 'Unnamed Episode'}</h3>
-                                <p className="text-sm text-gray-700 mb-2" dangerouslySetInnerHTML={{ __html: podcast.description || 'No description available' }}></p>
-                                <p className="text-xs text-gray-500">Released on: {podcast.release_date || 'Unknown date'}</p>
+                        <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
+                            <img
+                                src={podcast.show_image || '/default-podcast-image.jpg'}
+                                alt={podcast.show}
+                                className="w-full h-48 object-cover"
+                            />
+                            <div className="p-4 flex-grow flex flex-col">
+                                <h2 className="text-lg font-bold mb-1">{podcast.show || 'Unknown Show'}</h2>
+                                <h3 className="text-md font-semibold mb-2">{podcast.name || 'Unnamed Episode'}</h3>
+                                <div className="flex-grow">
+                                    <p className={`text-sm text-gray-700 mb-2 ${expandedDescriptions[index] ? '' : 'line-clamp-3'}`}
+                                       dangerouslySetInnerHTML={{ __html: podcast.description || 'No description available' }}></p>
+                                    {podcast.description && podcast.description.length > 100 && (
+                                        <button
+                                            onClick={() => toggleDescription(index)}
+                                            className="text-blue-500 hover:text-blue-700 transition-colors duration-300"
+                                        >
+                                            {expandedDescriptions[index] ? 'Show Less' : 'Show More'}
+                                        </button>
+                                    )}
+                                </div>
+                                <p className="text-xs text-gray-500 mt-2">Released on: {podcast.release_date || 'Unknown date'}</p>
                                 <p className="text-xs text-gray-500">Duration: {podcast.total || 'Unknown duration'}</p>
                                 {podcast.play_url && (
-                                    <a href={podcast.play_url} className="inline-block mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">Listen</a>
+                                    <a href={podcast.play_url} className="inline-block mt-4 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-300">Listen</a>
                                 )}
                             </div>
                         </div>
