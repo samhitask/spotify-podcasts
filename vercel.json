@@ -20,13 +20,5 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "backend/application.py" },
     { "src": "/(.*)", "dest": "podcastify/.next/$1" }
-  ],
-  "ignore": [
-    "node_modules/**",
-    "public/**",
-    "backend/__pycache__/**",
-    "tests/**",
-    "*.log",
-    "*.md"
   ]
 }
