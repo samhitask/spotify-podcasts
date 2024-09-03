@@ -1,8 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List
-from markupsafe import Markup
-import spotipy
-import cred
+from spotipy import Spotify
 
 
 def getShows(sp):
