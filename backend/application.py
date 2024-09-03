@@ -3,29 +3,25 @@ from flask import Flask, jsonify, request, redirect, session
 from flask_caching import Cache
 from flask_cors import CORS
 from spotipy.oauth2 import SpotifyOAuth
-import spotipy
+from spotipy import Spotify
 import spotify_notif as spotify_notif
-import cred
 import secrets
 import logging
+import os
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 CORS(app, supports_credentials=True, origins=["http://localhost:3000", "http://127.0.0.1:5000"])
 
-# Configure caching
-app.config['CACHE_TYPE'] = 'simple'
-app.config['CACHE_DEFAULT_TIMEOUT'] = 3600  # 1 hour
-cache = Cache(app)
-cache.init_app(app)
+cache = Cache(app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': 3600})
 
 
 # Spotify OAuth configuration
 def create_spotify_oauth():
     return SpotifyOAuth(
-        client_id=cred.CLIENT_ID,
-        client_secret=cred.CLIENT_SECRET,
-        redirect_uri=cred.REDIRECT_URI,
+        client_id=os.environ['SPOTIFY_CLIENT_ID'],
+        client_secret=os.environ['SPOTIFY_CLIENT_SECRET'],
+        redirect_uri=os.environ['SPOTIFY_REDIRECT_URI'],
         scope='user-library-read user-read-playback-position'
     )
 
@@ -94,7 +90,7 @@ def callback():
         logging.info("Token info successfully cached")
 
         return redirect('http://localhost:3000/dashboard')  # Redirect to your Next.js app
-    except spotipy.SpotifyOauthError as e:
+    except Spotify.SpotifyOauthError as e:
         logging.error(f"Spotify OAuth error: {str(e)}")
         return jsonify({"error": "Authentication failed", "details": str(e)}), 400
     except Exception as e:
@@ -108,7 +104,7 @@ def home():
         token_info = get_cached_token()
         if token_info is None:
             raise Exception("No valid token found.")
-        sp = spotipy.Spotify(auth=token_info['access_token'])
+        sp = Spotify(auth=token_info['access_token'])
 
         logging.info("Fetching podcasts...")
         podcasts = spotify_notif.getPodcasts(sp)
@@ -126,19 +122,11 @@ def getShows():
         token_info = get_cached_token()
         if token_info is None:
             raise Exception("No valid token found.")
-        spotify_notif.sp = spotipy.Spotify(auth=token_info['access_token'])
+        spotify_notif.sp = Spotify(auth=token_info['access_token'])
         return jsonify(spotify_notif.getShows(spotify_notif.sp))
     except Exception as e:
         logging.error(f"Error in getShows route: {e}")
         return jsonify({"error": str(e)}), 401
-
-@app.route('/config', methods=['POST'])
-def configure_frontend():
-    if request.method == 'POST':
-        data = request.json  # Assuming frontend sends JSON data
-        message = f"Received configuration: {data}"
-        return jsonify({'message': message})
-    return jsonify({'error': 'Method not allowed'}), 405
 
 @app.route('/logout')
 def logout():
